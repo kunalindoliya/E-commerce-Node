@@ -1,22 +1,21 @@
 const express = require('express');
 const path=require('path');
 const app = express();
-const expressHbs=require('express-handlebars');
 // view engine setup
-//app.engine('hbs',expressHbs());
 app.set('views', 'views');
 app.set('view engine', 'ejs');
-const bodyparser=require('body-parser');
+const bodyParser=require('body-parser');
 app.use(express.static(path.join(__dirname,'public')));
-const adminData=require('./routes/admin');
+
+const errorController=require('./controllers/error');
+
+const adminRoutes=require('./routes/admin');
 const userRoutes=require('./routes/shop');
 //creating middleware
-app.use(bodyparser.urlencoded({extended:false}));
-app.use('/admin',adminData.routes);
+app.use(bodyParser.urlencoded({extended:false}));
+app.use('/admin',adminRoutes);
 app.use(userRoutes);
 
-app.use((req,res,next)=>{
-    res.status(404).render('404',{pageTitle:'Page Not found'});
-});
+app.use(errorController.get404);
 app.listen(3000);
 
