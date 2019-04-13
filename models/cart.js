@@ -6,7 +6,7 @@ module.exports= class cart {
    static addProduct(id,productPrice){
        //fetch the previous cart
        fs.readFile(p,(err,fileContent)=>{
-           let cart={products:[],totalprice:0};
+           let cart={products:[],totalPrice:0};
            if(!err){
                //cart already exists
                cart=JSON.parse(fileContent);
@@ -20,8 +20,23 @@ module.exports= class cart {
            } else{
               cart.products.push({id:id,qty:1});
            }
-           cart.totalprice+= +productPrice;
+           cart.totalPrice+= +productPrice;
            fs.writeFile(p,JSON.stringify(cart),err => {
+               console.log(err);
+           });
+       });
+   }
+
+   static  deleteProduct(id,price){
+       fs.readFile(p,(err,fileContent)=>{
+           if(err)
+               return;
+           const updatedCart={...JSON.parse(fileContent)};
+           const product=updatedCart.products.find(prod => prod.id===id);
+           updatedCart.products=updatedCart.products.filter(prod=> prod.id !== id);
+           const prodQty=product.qty;
+           updatedCart.totalPrice=updatedCart.totalPrice - price*prodQty;
+           fs.writeFile(p,JSON.stringify(updatedCart),err => {
                console.log(err);
            });
        });
