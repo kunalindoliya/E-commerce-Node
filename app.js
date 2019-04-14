@@ -11,6 +11,12 @@ const errorController=require('./controllers/error');
 
 const adminRoutes=require('./routes/admin');
 const userRoutes=require('./routes/shop');
+const db=require('./util/database');
+db.execute('select * from products').then(result=>{
+   console.log(result)
+}).catch(err=>{
+    console.log(err);
+});
 //creating middleware
 app.use(bodyParser.urlencoded({extended:false}));
 app.use('/admin',adminRoutes);
