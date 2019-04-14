@@ -7,6 +7,7 @@ router.get('/products',shopController.getProducts);
 router.get('/product-detail/:id',shopController.getProduct);
 router.get('/cart',shopController.getCart);
 router.post('/cart',shopController.postCart);
+router.get('/cart-delete-item/:id',shopController.getCartDeleteItem);
 router.get('/orders');
 router.get('/checkout',shopController.getCheckout);
 module.exports=router;

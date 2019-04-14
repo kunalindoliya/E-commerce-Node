@@ -4,4 +4,18 @@
 
 <body>
 <%- include('../includes/navigation.ejs')%>
+<main>
+   <%if(products.length >0){%>
+    <ul>
+        <% products.forEach(p =>{%>
+            <li>
+                <p><%=p.productData.title%>(<%=p.qty%>)</p>
+                <a href="/cart-delete-item/<%=p.productData.id%>" class="btn">Delete</a>
+            </li>
+        <%})%>
+    </ul>
+    <%} else {%>
+    <h1>No Products found</h1>
+    <%}%>
+</main>
 <%- include('../includes/end.ejs')%>
