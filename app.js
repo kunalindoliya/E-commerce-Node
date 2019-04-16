@@ -6,8 +6,8 @@ app.set('views', 'views');
 app.set('view engine', 'ejs');
 const bodyParser=require('body-parser');
 app.use(express.static(path.join(__dirname,'public')));
-
 const errorController=require('./controllers/error');
+const sequelize=require('./util/database');
 
 const adminRoutes=require('./routes/admin');
 const userRoutes=require('./routes/shop');
@@ -15,7 +15,10 @@ const userRoutes=require('./routes/shop');
 app.use(bodyParser.urlencoded({extended:false}));
 app.use('/admin',adminRoutes);
 app.use(userRoutes);
-
 app.use(errorController.get404);
-app.listen(3000);
+sequelize.sync().then(result=>{
+    //console.log(result);
+    app.listen(3000);
+}).catch(err=>console.log(err));
+
 
