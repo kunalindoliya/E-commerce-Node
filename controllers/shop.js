@@ -24,11 +24,9 @@ exports.getProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
-      res.render("shop/index", { prods: rows, path: "/", pageTitle: "Shop" });
-    })
-    .catch(err => console.log(err));
+  Product.findAll().then(products=>{
+    res.render("shop/index", { prods: products, path: "/", pageTitle: "Shop" });
+  }).catch(err =>console.log(err));
 };
 exports.getCart = (req, res, next) => {
   Cart.getCart(cart => {
