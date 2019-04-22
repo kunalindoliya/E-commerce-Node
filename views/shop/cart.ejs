@@ -1,21 +1,28 @@
-<%- include('../includes/head.ejs')%>
-<link rel="stylesheet" href="/stylesheets/product.css">
-</head>
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/stylesheets/cart.css">
+    </head>
 
-<body>
-<%- include('../includes/navigation.ejs')%>
-<main>
-   <%if(products.length >0){%>
-    <ul>
-        <% products.forEach(p =>{%>
-            <li>
-                <p><%=p.productData.title%>(<%=p.qty%>)</p>
-                <a href="/cart-delete-item/<%=p.productData.id%>" class="btn">Delete</a>
-            </li>
-        <%})%>
-    </ul>
-    <%} else {%>
-    <h1>No Products found</h1>
-    <%}%>
-</main>
-<%- include('../includes/end.ejs')%>
+    <body>
+        <%- include('../includes/navigation.ejs') %>
+        <main>
+            <% if (products.length > 0) { %>
+                <ul class="cart__item-list">
+                    <% products.forEach(p => { %>
+                        <li class="cart__item">
+                            <h1><%= p.title %></h1>
+                            <h2>Quantity: <%= p.cartItem.quantity %></h2>
+                            <a href="/cart-delete-item/<%=p.id%>" class="btn">Delete</a>
+                        </li>
+                    <% }) %>
+                </ul>
+                <hr>
+                <div class="centered">
+                    <form action="/create-order" method="POST">
+                        <button class="btn" type="submit">Order Now!</button>
+                    </form>
+                </div>
+            <% } else { %>
+                <h1>No Products in Cart!</h1>
+            <% } %>
+        </main>
+        <%- include('../includes/end.ejs') %>

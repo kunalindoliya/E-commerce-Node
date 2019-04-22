@@ -12,6 +12,8 @@ const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
+const Order = require("./models/order");
+const OrderItem = require("./models/order-item");
 
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
@@ -35,11 +37,15 @@ Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); //many to o
 User.hasMany(Product); //one to many relationship
 User.hasOne(Cart); //one to one relationship
 Cart.belongsTo(User);//one to one
-Cart.belongsToMany(Product,{through:CartItem});
-Product.belongsToMany(Cart,{through:CartItem});
+Cart.belongsToMany(Product,{through:CartItem}); //many to many relationship
+Product.belongsToMany(Cart,{through:CartItem}); //many to many
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product,{through:OrderItem}); //inverse is optional
 
 sequelize
-  .sync({force:true})
+  //.sync({force:true})
+  .sync()
   .then(result => {
     return User.findByPk(1);
   })
@@ -48,7 +54,9 @@ sequelize
     return user;
   })
   .then(user => {
-    //console.log(user);
+    user.createCart();
+  })
+  .then(cart=>{
     app.listen(3000);
   })
   .catch(err => console.log(err));
