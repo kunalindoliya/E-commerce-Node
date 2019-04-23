@@ -8,11 +8,13 @@
   "dependencies": {
     "@types/sequelize": "^4.27.48",
     "body-parser": "^1.18.3",
+    "connect-session-sequelize": "^6.0.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.2",
+    "express-session": "^1.16.1",
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
     "mysql2": "^1.6.5",

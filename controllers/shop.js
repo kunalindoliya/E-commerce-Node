@@ -7,7 +7,7 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         path: "/products",
         pageTitle: "All Products",
-        isAuthenticated:req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
       });
     })
     .catch(err => console.log(err));
@@ -20,7 +20,7 @@ exports.getProduct = (req, res, next) => {
         product: product,
         pageTitle: "Product Detail",
         path: "/products",
-        isAuthenticated:req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
       });
     })
     .catch(err => console.log(err));
@@ -32,13 +32,13 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         path: "/",
         pageTitle: "Shop",
-        isAuthenticated:req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
       });
     })
     .catch(err => console.log(err));
 };
 exports.getCart = (req, res, next) => {
-  req.user
+  req.session.user
     .getCart()
     .then(cart => {
       return cart
@@ -48,7 +48,7 @@ exports.getCart = (req, res, next) => {
             path: "/cart",
             pageTitle: "Your Cart",
             products: products,
-            isAuthenticated:req.isLoggedIn
+            isAuthenticated: req.session.isLoggedIn
           });
         })
         .catch(err => console.log(err));
@@ -59,7 +59,7 @@ exports.getCart = (req, res, next) => {
 exports.postCart = (req, res, next) => {
   const id = req.body.id;
   let fetchedCart;
-  req.user
+  req.session.user
     .getCart()
     .then(cart => {
       fetchedCart = cart;
@@ -91,8 +91,8 @@ exports.postCart = (req, res, next) => {
 };
 
 exports.getCartDeleteItem = (req, res, next) => {
-  const id = req.params.id;
-  req.user
+  const id = req.session.user.params.id;
+  req.session.user
     .getCart()
     .then(cart => {
       return cart.getProducts({ where: { id: id } });
@@ -109,14 +109,14 @@ exports.getCartDeleteItem = (req, res, next) => {
 
 exports.postOrder = (req, res, next) => {
   let fetchedCart;
-  req.user
+  req.session.user
     .getCart()
     .then(cart => {
       fetchedCart = cart;
       return cart.getProducts();
     })
     .then(products => {
-      req.user
+      req.session.user
         .createOrder()
         .then(order => {
           return order.addProducts(
@@ -138,10 +138,15 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user
-    .getOrders({include:['products']})
+  req.session.user
+    .getOrders({ include: ["products"] })
     .then(orders => {
-      res.render("shop/orders", { path: "/orders", pageTitle: "Orders",orders:orders, isAuthenticated:req.isLoggedIn });
+      res.render("shop/orders", {
+        path: "/orders",
+        pageTitle: "Orders",
+        orders: orders,
+        isAuthenticated: req.session.isLoggedIn
+      });
     })
     .catch(err => console.log(err));
 };
