@@ -17,6 +17,7 @@ const OrderItem = require("./models/order-item");
 
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
+const authRoutes= require('./routes/auth');
 //creating middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 
 app.use("/admin", adminRoutes);
 app.use(userRoutes);
+app.use(authRoutes);
 app.use(errorController.get404);
 
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); //many to one relationship
