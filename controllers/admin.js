@@ -13,8 +13,7 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
-  console.log(req.session.user);
-  req.session.user
+  req.user
     .createProduct({
       title: title,
       imageUrl: imageUrl,
@@ -29,7 +28,7 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
   const id = req.params.id;
-  req.session.user
+  req.user
     .getProducts({
       where: {
         id: id
@@ -70,7 +69,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  req.session.user.getProducts()
+  req.user.getProducts()
     .then(products => {
       res.render("admin/product-list", {
         prods: products,

@@ -15,8 +15,8 @@ const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
-const sessionStore=new SequelizeStore({
-db:sequelize
+const sessionStore = new SequelizeStore({
+  db: sequelize
 });
 
 const adminRoutes = require("./routes/admin");
@@ -34,6 +34,17 @@ app.use(
   })
 );
 
+app.use((req,res,next)=>{
+  if(!req.session.user){
+    return next();
+  }
+  User.findByPk(req.session.user.id)
+  .then(user => {
+    req.user = user;
+    next();
+  })
+  .catch(err => console.log(err))
+});
 
 app.use("/admin", adminRoutes);
 app.use(userRoutes);
@@ -54,16 +65,6 @@ sequelize
   //.sync({force:true})
   .sync()
   .then(result => {
-    return User.findByPk(1);
-  })
-  .then(user => {
-    if (!user) return User.create({ name: "Max", email: "max@gmail.com" });
-    return user;
-  })
-  .then(user => {
-    user.createCart();
-  })
-  .then(cart => {
     app.listen(3000);
   })
   .catch(err => console.log(err));

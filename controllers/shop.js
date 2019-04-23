@@ -38,7 +38,7 @@ exports.getIndex = (req, res, next) => {
     .catch(err => console.log(err));
 };
 exports.getCart = (req, res, next) => {
-  req.session.user
+  req.user
     .getCart()
     .then(cart => {
       return cart
@@ -59,7 +59,7 @@ exports.getCart = (req, res, next) => {
 exports.postCart = (req, res, next) => {
   const id = req.body.id;
   let fetchedCart;
-  req.session.user
+  req.user
     .getCart()
     .then(cart => {
       fetchedCart = cart;
@@ -91,8 +91,8 @@ exports.postCart = (req, res, next) => {
 };
 
 exports.getCartDeleteItem = (req, res, next) => {
-  const id = req.session.user.params.id;
-  req.session.user
+  const id = req.params.id;
+  req.user
     .getCart()
     .then(cart => {
       return cart.getProducts({ where: { id: id } });
@@ -109,14 +109,14 @@ exports.getCartDeleteItem = (req, res, next) => {
 
 exports.postOrder = (req, res, next) => {
   let fetchedCart;
-  req.session.user
+  req.user
     .getCart()
     .then(cart => {
       fetchedCart = cart;
       return cart.getProducts();
     })
     .then(products => {
-      req.session.user
+      req.user
         .createOrder()
         .then(order => {
           return order.addProducts(
@@ -138,7 +138,7 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  req.session.user
+  req.user
     .getOrders({ include: ["products"] })
     .then(orders => {
       res.render("shop/orders", {
