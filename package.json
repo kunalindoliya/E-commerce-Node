@@ -11,6 +11,7 @@
     "body-parser": "^1.18.3",
     "connect-session-sequelize": "^6.0.0",
     "cookie-parser": "~1.4.3",
+    "csurf": "^1.10.0",
     "debug": "~2.6.9",
     "ejs": "^2.6.1",
     "express": "^4.16.3",

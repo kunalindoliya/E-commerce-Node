@@ -8,7 +8,7 @@ router.get('/products',shopController.getProducts);
 router.get('/product-detail/:id',shopController.getProduct);
 router.get('/cart',isAuth,shopController.getCart);
 router.post('/cart',isAuth,shopController.postCart);
-router.get('/cart-delete-item/:id',isAuth,shopController.getCartDeleteItem);
+router.post('/cart-delete-item',isAuth,shopController.postCartDeleteItem);
 router.get('/orders',isAuth,shopController.getOrders);
 router.get('/checkout',isAuth,shopController.getCheckout);
 router.post('/create-order',isAuth,shopController.postOrder);

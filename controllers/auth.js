@@ -72,7 +72,7 @@ exports.postSignup = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
-exports.getLogout = (req, res, next) => {
+exports.postLogout = (req, res, next) => {
   req.session.destroy(() => {
     res.redirect("/");
   });

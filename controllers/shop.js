@@ -6,8 +6,7 @@ exports.getProducts = (req, res, next) => {
       res.render("shop/product-list", {
         prods: products,
         path: "/products",
-        pageTitle: "All Products",
-        isAuthenticated: req.session.isLoggedIn
+        pageTitle: "All Products"
       });
     })
     .catch(err => console.log(err));
@@ -19,8 +18,7 @@ exports.getProduct = (req, res, next) => {
       res.render("shop/product-detail", {
         product: product,
         pageTitle: "Product Detail",
-        path: "/products",
-        isAuthenticated: req.session.isLoggedIn
+        path: "/products"
       });
     })
     .catch(err => console.log(err));
@@ -31,8 +29,7 @@ exports.getIndex = (req, res, next) => {
       res.render("shop/index", {
         prods: products,
         path: "/",
-        pageTitle: "Shop",
-        isAuthenticated: req.session.isLoggedIn
+        pageTitle: "Shop"
       });
     })
     .catch(err => console.log(err));
@@ -51,7 +48,6 @@ exports.getCart = (req, res, next) => {
             path: "/cart",
             pageTitle: "Your Cart",
             products: products,
-            isAuthenticated: req.session.isLoggedIn
           });
         })
         .catch(err => console.log(err));
@@ -93,8 +89,8 @@ exports.postCart = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
-exports.getCartDeleteItem = (req, res, next) => {
-  const id = req.params.id;
+exports.postCartDeleteItem = (req, res, next) => {
+  const id = req.body.productId;
   req.user
     .getCart()
     .then(cart => {
@@ -119,7 +115,7 @@ exports.postOrder = (req, res, next) => {
       return cart.getProducts();
     })
     .then(products => {
-      req.user
+      return req.user
         .createOrder()
         .then(order => {
           return order.addProducts(
@@ -147,8 +143,7 @@ exports.getOrders = (req, res, next) => {
       res.render("shop/orders", {
         path: "/orders",
         pageTitle: "Orders",
-        orders: orders,
-        isAuthenticated: req.session.isLoggedIn
+        orders: orders
       });
     })
     .catch(err => console.log(err));
