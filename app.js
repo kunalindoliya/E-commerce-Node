@@ -20,6 +20,7 @@ const sessionStore = new SequelizeStore({
 });
 const csrf=require('csurf');
 const csrfProtection=csrf();
+const flash=require('connect-flash');
 
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
@@ -37,6 +38,7 @@ app.use(
 );
 
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req,res,next)=>{
   if(!req.session.user){
