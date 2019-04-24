@@ -41,6 +41,9 @@ exports.getCart = (req, res, next) => {
   req.user
     .getCart()
     .then(cart => {
+      if(!cart){
+        cart=req.user.createCart();
+      }
       return cart
         .getProducts()
         .then(products => {

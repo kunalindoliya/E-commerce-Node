@@ -10,16 +10,32 @@ exports.getLogin = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
   //res.setHeader('Set-Cookie','loggedIn=true');
-  User.findByPk(1)
+  const email = req.body.email;
+  const password = req.body.password;
+  User.findOne({where:{ email: email }})
     .then(user => {
-      req.session.user = user;
-      req.session.isLoggedIn = true;
-      req.session.save(err => {
-        if (err) {
+      if (!user) {
+        return res.redirect("/login");
+      }
+      bcrypt
+        .compare(password, user.password)
+        .then(doMatch => {
+          if (doMatch) {
+            req.session.user = user;
+            req.session.isLoggedIn = true;
+            return req.session.save(err => {
+              if (err) {
+                console.log(err);
+              }
+              res.redirect("/");
+            });
+          }
+          res.redirect("/login");
+        })
+        .catch(err => {
           console.log(err);
-        }
-        res.redirect("/");
-      });
+          res.redirect("/login");
+        });
     })
     .catch(err => console.log(err));
 };
@@ -39,18 +55,20 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ where: { email: email } })
     .then(userDoc => {
       if (userDoc) return res.redirect("/signup");
-      return bcrypt.hash(password, 10);
+      return bcrypt
+        .hash(password, 10)
+        .then(hashValue => {
+          const user = new User({
+            email: email,
+            password: hashValue
+          });
+          return user.save();
+        })
+        .then(result => {
+          res.redirect("/login");
+        });
     })
-    .then(hashValue => {
-      const user = new User({
-        email: email,
-        password: hashValue
-      });
-      return user.save();
-    })
-    .then(result => {
-      res.redirect("/login");
-    })
+
     .catch(err => console.log(err));
 };
 
