@@ -76,8 +76,8 @@ User.hasMany(Order);
 Order.belongsToMany(Product, { through: OrderItem }); //inverse is optional
 
 sequelize
-  //.sync({force:true})
-  .sync()
+  .sync({force:true})
+  //.sync()
   .then(result => {
     app.listen(3000);
   })
