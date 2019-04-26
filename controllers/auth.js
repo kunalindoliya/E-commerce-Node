@@ -2,6 +2,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const Sequelize=require('sequelize');
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 const key = process.env.SENDGRID_API_KEY;
 const transporter = nodemailer.createTransport(
@@ -140,7 +141,7 @@ exports.postReset = (req, res, next) => {
       return res.redirect("/reset");
     }
     const token = buffer.toString("hex");
-    User.findOne({ where: { email: req.body.emmail } })
+    User.findOne({ where: { email: req.body.email } })
       .then(user => {
         if (!user) {
           req.flash("error", "No user found with that email.");
@@ -157,7 +158,7 @@ exports.postReset = (req, res, next) => {
         return transporter.sendMail({
           to: req.body.email,
           from: "kunalindoliya@gmail.com",
-          subject: "Signup Succeeded",
+          subject: "Change Password",
           html: `
         <p>You requested a password reset</p>
         <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password</a>
@@ -171,7 +172,7 @@ exports.postReset = (req, res, next) => {
 exports.getNewPassword = (req, res, next) => {
   const token = req.params.token;
   User.findOne({
-    where: { resetToken: token, resetTokenExpiration: { $gt: Date.now() } }
+    where: { resetToken: token, resetTokenExpiration: { [Sequelize.Op.gt]: Date.now() } }
   })
     .then(user => {
       let message = req.flash("error");
@@ -199,7 +200,7 @@ exports.postNewPassword = (req, res, next) => {
   User.findOne({
     where: {
       resetToken: token,
-      resetTokenExpiration: { $gt: Date.now() },
+      resetTokenExpiration: { [Sequelize.Op.gt]: Date.now() },
       id: userId
     }
   })
@@ -209,8 +210,8 @@ exports.postNewPassword = (req, res, next) => {
     })
     .then(hashValue=>{
       resetUser.password=hashValue;
-      resetUser.resetToken=undefined;
-      resetUser.resetTokenExpiration=undefined;
+      resetUser.resetToken=null;
+      resetUser.resetTokenExpiration=null;
       return resetUser.save();
     })
     .then(result=>{
