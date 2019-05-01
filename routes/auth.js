@@ -9,10 +9,12 @@ router.get("/login", authController.getLogin);
 router.post("/login",[
   body('email')
     .isEmail()
-    .withMessage('Please enter a valid email address.'),
+    .withMessage('Please enter a valid email address.')
+    .normalizeEmail(),
   body('password', 'Password has to be valid.')
     .isLength({ min: 5 })
     .isAlphanumeric()
+    .trim()
 ], authController.postLogin);
 router.post("/logout", authController.postLogout);
 router.get("/signup", authController.getSignup);
@@ -21,6 +23,7 @@ router.post(
   [
     check("email")
       .isEmail()
+      .normalizeEmail()
       .withMessage("Please enter a valid Email").custom((value,{req})=>{
         return User.findOne({ where: { email: value } })
         .then(user => {
@@ -31,8 +34,9 @@ router.post(
     }),
     body('password','Please enter alphanumeric password and atleast 5 characters')
     .isLength({min:5})
-    .isAlphanumeric(),
-    body('confirmPassword').custom((value,{req})=>{
+    .isAlphanumeric()
+    .trim(),
+    body('confirmPassword').trim().custom((value,{req})=>{
       if(value !== req.body.password){
           throw new Error('Password must be matched!');
       }
