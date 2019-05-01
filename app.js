@@ -18,9 +18,9 @@ const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const sessionStore = new SequelizeStore({
   db: sequelize
 });
-const csrf=require('csurf');
-const csrfProtection=csrf();
-const flash=require('connect-flash');
+const csrf = require("csurf");
+const csrfProtection = csrf();
+const flash = require("connect-flash");
 
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
@@ -40,30 +40,36 @@ app.use(
 app.use(csrfProtection);
 app.use(flash());
 
-app.use((req,res,next)=>{
-  if(!req.session.user){
+//adding protection
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+app.use((req, res, next) => {
+  if (!req.session.user) {
     return next();
   }
   User.findByPk(req.session.user.id)
-  .then(user => {
-    req.user = user;
-    next();
-  })
-  .catch(err => console.log(err))
-});
-
-//adding protection
-app.use((req,res,next)=>{
-res.locals.isAuthenticated=req.session.isLoggedIn;
-res.locals.csrfToken=req.csrfToken();
-next();
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => next(new Error(err)));
 });
 
 
 app.use("/admin", adminRoutes);
 app.use(userRoutes);
 app.use(authRoutes);
+//error handling routes
+app.get("/500", errorController.get500);
 app.use(errorController.get404);
+//central middleware for error handling
+app.use((error, req, res, next) => {
+  res.redirect("/500");
+});
 
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); //many to one relationship
 User.hasMany(Product); //one to many relationship

@@ -45,7 +45,11 @@ exports.postAddProduct = (req, res, next) => {
     .then(result => {
       res.redirect("/admin/products");
     })
-    .catch(err => console.log(err));
+    .catch(err =>{
+      const error=new Error(err);
+      error.httpStatusCode(500);
+      next(error);
+    });
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -69,7 +73,11 @@ exports.getEditProduct = (req, res, next) => {
         validationError: []
       });
     })
-    .catch(err => console.log(err));
+    .catch(err =>{
+      const error=new Error(err);
+      error.httpStatusCode(500);
+      next(error);
+    });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -110,7 +118,11 @@ exports.postEditProduct = (req, res, next) => {
         res.redirect("/admin/products");
       });
     })
-    .catch(err => console.log(err));
+    .catch(err =>{
+      const error=new Error(err);
+      error.httpStatusCode(500);
+      next(error);
+    });
 };
 
 exports.getProducts = (req, res, next) => {
@@ -123,7 +135,11 @@ exports.getProducts = (req, res, next) => {
         pageTitle: "All Products"
       });
     })
-    .catch(err => console.log(err));
+    .catch(err =>{
+      const error=new Error(err);
+      error.httpStatusCode(500);
+      next(error);
+    });
 };
 
 exports.deleteProduct = (req, res, next) => {
@@ -137,5 +153,9 @@ exports.deleteProduct = (req, res, next) => {
     .then(result => {
       res.redirect("/admin/products");
     })
-    .catch(err => console.log(err));
+    .catch(err =>{
+      const error=new Error(err);
+      error.httpStatusCode(500);
+      next(error);
+    });
 };
