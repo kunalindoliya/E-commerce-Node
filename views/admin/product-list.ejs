@@ -3,10 +3,10 @@
 </head>
 
 <body>
-<%- include('../includes/navigation.ejs')%>
+    <%- include('../includes/navigation.ejs')%>
 
-<main>
-    <% if(prods.length >0){%>
+    <main>
+        <% if(prods.length >0){%>
         <div class="grid">
             <% for(let product of prods){%>
             <article class="card product-item">
@@ -22,17 +22,16 @@
                 </div>
                 <div class="card__actions">
                     <a class="btn" href="/admin/editproduct/<%=product.id%>">Edit</a>
-                    <form action="/admin/deleteproduct" method="POST">
-                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                        <input type="hidden" name="productId" value="<%=product.id%>">
-                        <button class="btn" type="submit">Delete</button>
-                    </form>
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                    <input type="hidden" name="productId" value="<%=product.id%>">
+                    <button class="btn" type="button" onclick="deleteProduct(this)">Delete</button>
                 </div>
             </article>
             <%}%>
         </div>
     <%}  else {%>
-        <h1>No products found</h1>
-    <%}%>
+            <h1>No products found</h1>
+            <%}%>
 </main>
+<script src="/javascripts/admin.js"></script>
 <%- include('../includes/end.ejs')%>

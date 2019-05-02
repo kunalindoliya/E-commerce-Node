@@ -32,5 +32,5 @@ router.post(
   isAuth,
   adminController.postEditProduct
 );
-router.post("/deleteproduct", isAuth, adminController.deleteProduct);
+router.delete("/product/:productId", isAuth, adminController.deleteProduct);
 module.exports = router;
