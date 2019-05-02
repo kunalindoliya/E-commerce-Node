@@ -52,7 +52,7 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
   console.log("In add");
-  const imageUrl = "/" + image.path;
+  const imageUrl = image.path;
   req.user
     .createProduct({
       title: title,
@@ -132,7 +132,7 @@ exports.postEditProduct = (req, res, next) => {
       product.title = title;
       if (image) {
         fileHelper(product.imageUrl);
-        product.imageUrl = "/" + image.path;
+        product.imageUrl = image.path;
       }
       product.description = description;
       product.price = price;
