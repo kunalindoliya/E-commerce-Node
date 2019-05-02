@@ -26,6 +26,7 @@
     "nodemailer": "^6.1.1",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemon": "^1.18.10",
+    "pdfkit": "^0.9.1",
     "prettier": "^1.17.0",
     "pug": "^2.0.3",
     "sequelize": "^5.6.0"

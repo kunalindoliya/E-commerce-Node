@@ -3,6 +3,7 @@ const Cart = require("../models/cart");
 const fs=require('fs');
 const path=require('path');
 const Order=require('../models/order');
+const PDFdocument=require('pdfkit');
 
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -188,21 +189,44 @@ exports.getInvoice=(req,res,next)=>{
   const orderId=req.params.orderId;
   const invoiceName='invoice-'+orderId+'.pdf';
   const invoicePath=path.join('data','invoices',invoiceName);
-  Order.findByPk(orderId).then(order=>{
+  Order.findOne({where:{id:orderId},include:['products']}).then(order=>{
       if(!order){
         return next(new Error('Order not found'));
       }
       if(order.userId !== req.user.id){
         return next(new Error('Unauthorized access!'));
       }
-      fs.readFile(invoicePath,(err,data)=>{
-        if(err){
-          return next(err);
-        }
-        res.setHeader('Content-Type','application/pdf');
-        res.setHeader('Content-Disposition','attachment; filename="'+invoiceName+'"');
-        res.send(data);
+
+      const pdfDoc=new PDFdocument();
+      res.setHeader('Content-Type','application/pdf');
+      res.setHeader('Content-Disposition','attachment; filename="'+invoiceName+'"');
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+      pdfDoc.fontSize(26).text('Invoice',{
+         underline:true 
       });
+      pdfDoc.fontSize(14).text('--------------------');
+      let totalPrice=0;
+      order.products.forEach(product=>{
+        totalPrice+= product.orderItem.quantity*product.price;
+        pdfDoc.text(product.title+' - '+product.orderItem.quantity+' x '+' $ '+product.price)
+      });
+      pdfDoc.text('-----------------')
+      pdfDoc.text('Total Price: $'+totalPrice);
+      pdfDoc.end();
+
+
+      // fs.readFile(invoicePath,(err,data)=>{
+      //   if(err){
+      //     return next(err);
+      //   }
+      //   res.setHeader('Content-Type','application/pdf');
+      //   res.setHeader('Content-Disposition','attachment; filename="'+invoiceName+'"');
+      //   res.send(data);
+      // });
+      // const file=fs.createReadStream(invoicePath);
+      // file.pipe(res);
+
   }).catch(err=>{
       next(err);
   })
