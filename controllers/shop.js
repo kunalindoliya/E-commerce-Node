@@ -1,5 +1,9 @@
 const Product = require("../models/product");
 const Cart = require("../models/cart");
+const fs=require('fs');
+const path=require('path');
+const Order=require('../models/order');
+
 exports.getProducts = (req, res, next) => {
   Product.findAll()
     .then(products => {
@@ -11,8 +15,8 @@ exports.getProducts = (req, res, next) => {
     })
     .catch(err =>{
       const error=new Error(err);
-      error.httpStatusCode(500);
-      next(error);
+      error.httpStatusCode=500;
+      return next(error);
     });
 };
 exports.getProduct = (req, res, next) => {
@@ -27,8 +31,8 @@ exports.getProduct = (req, res, next) => {
     })
     .catch(err =>{
       const error=new Error(err);
-      error.httpStatusCode(500);
-      next(error);
+      error.httpStatusCode=500;
+      return next(error);
     });
 };
 exports.getIndex = (req, res, next) => {
@@ -42,8 +46,8 @@ exports.getIndex = (req, res, next) => {
     })
     .catch(err =>{
       const error=new Error(err);
-      error.httpStatusCode(500);
-      next(error);
+      error.httpStatusCode=500;
+      return next(error);
     });
 };
 exports.getCart = (req, res, next) => {
@@ -65,8 +69,8 @@ exports.getCart = (req, res, next) => {
     })
     .catch(err =>{
       const error=new Error(err);
-      error.httpStatusCode(500);
-      next(error);
+      error.httpStatusCode=500;
+      return next(error);
     });
 };
 
@@ -103,8 +107,8 @@ exports.postCart = (req, res, next) => {
     })
     .catch(err =>{
       const error=new Error(err);
-      error.httpStatusCode(500);
-      next(error);
+      error.httpStatusCode=500;
+      return next(error);
     });
 };
 
@@ -124,8 +128,8 @@ exports.postCartDeleteItem = (req, res, next) => {
     })
     .catch(err =>{
       const error=new Error(err);
-      error.httpStatusCode(500);
-      next(error);
+      error.httpStatusCode=500;
+      return next(error);
     });
 };
 
@@ -158,8 +162,8 @@ exports.postOrder = (req, res, next) => {
     })
     .catch(err =>{
       const error=new Error(err);
-      error.httpStatusCode(500);
-      next(error);
+      error.httpStatusCode=500;
+      return next(error);
     });
 };
 
@@ -175,10 +179,36 @@ exports.getOrders = (req, res, next) => {
     })
     .catch(err =>{
       const error=new Error(err);
-      error.httpStatusCode(500);
-      next(error);
+      error.httpStatusCode=500;
+      return next(error);
     });
 };
+
+exports.getInvoice=(req,res,next)=>{
+  const orderId=req.params.orderId;
+  const invoiceName='invoice-'+orderId+'.pdf';
+  const invoicePath=path.join('data','invoices',invoiceName);
+  Order.findByPk(orderId).then(order=>{
+      if(!order){
+        return next(new Error('Order not found'));
+      }
+      if(order.userId !== req.user.id){
+        return next(new Error('Unauthorized access!'));
+      }
+      fs.readFile(invoicePath,(err,data)=>{
+        if(err){
+          return next(err);
+        }
+        res.setHeader('Content-Type','application/pdf');
+        res.setHeader('Content-Disposition','attachment; filename="'+invoiceName+'"');
+        res.send(data);
+      });
+  }).catch(err=>{
+      next(err);
+  })
+  
+}
+
 exports.getCheckout = (req, res, next) => {
   res.render("/checkout", { path: "/checkout" });
 };

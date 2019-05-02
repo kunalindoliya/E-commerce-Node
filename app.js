@@ -5,7 +5,7 @@ const app = express();
 app.set("views", "views");
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
-const multer=require('multer');
+const multer = require("multer");
 const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
 const Product = require("./models/product");
@@ -22,24 +22,38 @@ const sessionStore = new SequelizeStore({
 const csrf = require("csurf");
 const csrfProtection = csrf();
 const flash = require("connect-flash");
-const fileStorage=multer.diskStorage({
-destination:(req,file,cb)=>{
-cb(null,'files');
-},
-filename: (req,file,cb)=>{
-cb(null,new Date().toISOString+"-"+file.originalname);
-}
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'files');
+  },
+  filename: (req, file, cb) => {
+    cb(null,  Date.now() + '-' + file.originalname);
+  }
 });
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/jpeg'
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
-
 //creating middleware
 app.use(express.static(path.join(__dirname, "public")));
+app.use('/files',express.static(path.join(__dirname, "files")));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({storage:fileStorage}).single('image'));
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 app.use(
   session({
     secret: "my secret",
@@ -71,7 +85,6 @@ app.use((req, res, next) => {
     .catch(err => next(new Error(err)));
 });
 
-
 app.use("/admin", adminRoutes);
 app.use(userRoutes);
 app.use(authRoutes);
@@ -80,6 +93,7 @@ app.get("/500", errorController.get500);
 app.use(errorController.get404);
 //central middleware for error handling
 app.use((error, req, res, next) => {
+  console.log(error);
   res.redirect("/500");
 });
 
