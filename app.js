@@ -5,6 +5,7 @@ const app = express();
 app.set("views", "views");
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
+const multer=require('multer');
 const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
 const Product = require("./models/product");
@@ -21,13 +22,24 @@ const sessionStore = new SequelizeStore({
 const csrf = require("csurf");
 const csrfProtection = csrf();
 const flash = require("connect-flash");
+const fileStorage=multer.diskStorage({
+destination:(req,file,cb)=>{
+cb(null,'files');
+},
+filename: (req,file,cb)=>{
+cb(null,new Date().toISOString+"-"+file.originalname);
+}
+});
 
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+
+
 //creating middleware
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({storage:fileStorage}).single('image'));
 app.use(
   session({
     secret: "my secret",
