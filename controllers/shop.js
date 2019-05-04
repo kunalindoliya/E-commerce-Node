@@ -274,5 +274,28 @@ exports.getInvoice = (req, res, next) => {
 };
 
 exports.getCheckout = (req, res, next) => {
-  res.render("/checkout", { path: "/checkout" });
+  req.user
+    .getCart()
+    .then(cart => {
+      if (!cart) {
+        cart = req.user.createCart();
+      }
+      return cart.getProducts().then(products => {
+        let total=0;
+        products.forEach(p=>{
+          total+=p.cartItem.quantity*p.price;
+        });
+        res.render("shop/checkout", {
+          path: "/checkout",
+          pageTitle: "Checkout",
+          products: products,
+          total:total
+        });
+      });
+    })
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
